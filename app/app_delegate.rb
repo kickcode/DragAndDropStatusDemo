@@ -4,26 +4,30 @@ class AppDelegate
   def applicationDidFinishLaunching(notification)
     @app_name = NSBundle.mainBundle.infoDictionary['CFBundleDisplayName']
 
-    @status_menu = NSMenu.new
+    @drag_and_drop = DragAndDropView.alloc.initWithFrame([[0, 0], [150, 30]])
+    @drag_and_drop.delegate = self
 
     @status_item = NSStatusBar.systemStatusBar.statusItemWithLength(NSVariableStatusItemLength).init
-    @status_item.setMenu(@status_menu)
-    @status_item.setHighlightMode(true)
-    @status_item.setTitle(@app_name)
-
-    @status_menu.addItem createMenuItem("About #{@app_name}", 'orderFrontStandardAboutPanel:')
-    @status_menu.addItem createMenuItem("Custom Action", 'pressAction')
-    @status_menu.addItem createMenuItem("Quit", 'terminate:')
+    @status_item.setView(@drag_and_drop)
   end
 
-  def createMenuItem(name, action)
-    NSMenuItem.alloc.initWithTitle(name, action: action, keyEquivalent: '')
+  def drag_received_for_file_paths(paths)
+    self.alert!("Received: #{paths.join(',')}")
   end
 
-  def pressAction
-    alert = NSAlert.alloc.init
-    alert.setMessageText "Action triggered from status bar menu"
-    alert.addButtonWithTitle "OK"
-    alert.runModal
+  def drag_received_for_text(text)
+    self.alert!("Received: #{text}")
+  end
+
+  def drag_received_for_url(url)
+    self.alert!("Received: #{url}")
+  end
+
+  def drag_received_for_url_and_title(url, title)
+    self.alert!("Received: #{url}")
+  end
+
+  def alert!(message)
+    NSRunAlertPanel("DragAndDropStatusDemo", message, "OK", nil, nil)
   end
 end
